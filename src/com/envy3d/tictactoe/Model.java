@@ -58,7 +58,6 @@ public class Model implements Controller {
 			for (int columnIndex = 0; columnIndex < board[rowIndex].length; ++columnIndex) {
 				boardToOverwrite[rowIndex][columnIndex] = board[rowIndex][columnIndex];
 			}
-			//System.arraycopy(board[rowIndex], 0, boardToOverwrite[rowIndex], 0, board[rowIndex].length);
 		}
 		return boardToOverwrite;
 	}

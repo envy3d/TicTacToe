@@ -58,6 +58,7 @@ public class SimpleAI extends AI{
 				isTurn = false;
 				return;
 			}
+			// Choose a random spot.
 			else if (controller.markBox(MathUtils.random(TicTacToeGame.WIDTH - 1), MathUtils.random(TicTacToeGame.HEIGHT - 1), marker)) {
 				isTurn = false;
 			}

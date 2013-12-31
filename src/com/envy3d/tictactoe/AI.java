@@ -11,16 +11,13 @@ public class AI extends View {
 	protected Combinations combos;
 	protected int[][] board;
 	
-	public AI(int marker, Controller controller) {
-		super(marker, controller);
+	public AI(int marker, Model model) {
+		super(marker, model);
 		combos = new Combinations();
+		board = Board.buildEmptyBoard();
 	}
 
 	public void update() {
-		if (isTurn) {
-			if (controller.markBox(MathUtils.random(TicTacToeGame.WIDTH - 1), MathUtils.random(TicTacToeGame.HEIGHT - 1), marker)) {
-				isTurn = false;
-			}
-		}
+		model.markBox(MathUtils.random(Board.WIDTH - 1), MathUtils.random(Board.HEIGHT - 1), marker);
 	}
 }

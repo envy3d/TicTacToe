@@ -6,11 +6,10 @@ package com.envy3d.tictactoe;
 
 public abstract class View {
 	protected int marker;
-	protected Controller controller;
-	public boolean isTurn;
+	protected Model model;
 	
-	public View(int marker, Controller controller) {
+	public View(int marker, Model model) {
 		this.marker = marker;
-		this.controller = controller;
+		this.model = model;
 	}
 }

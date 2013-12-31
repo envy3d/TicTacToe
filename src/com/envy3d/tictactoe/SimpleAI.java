@@ -5,73 +5,144 @@
 package com.envy3d.tictactoe;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class SimpleAI extends AI{
 	private boolean firstTurn;
 	
-	public SimpleAI(int marker, Controller controller) {
-		super(marker, controller);
+	public SimpleAI(int marker, Model model) {
+		super(marker, model);
 		firstTurn = true;
 	}
 	
 	@Override
 	public void update() {
-		if (isTurn) {
-			board = controller.getBoard(board);
-			controller.getCombinations(combos);
-			
-			// On the first turn, determine whether or not this AI is the first one to place a mark.
-			if (firstTurn) {
-				int checkForBlankBoard = 0;
-				for (int comboCount : combos.comboCounts) {
-					if (comboCount != 0) {
-						checkForBlankBoard = comboCount;
-					}
-				}
-				if (checkForBlankBoard == 0) {
-					controller.markBox(0, 0, marker);
-					isTurn = false;
-				}
-				firstTurn = false;
-				return;
-			}
-			
-			// Scan through combinationCounts to see if this AI can make a game-winning move
-			//	 or if the opponent can make a game-winning move.
-			int gameWinningIndex = -1;
-			int gameLosingIndex = -1;
-			for (int countIndex = 0; countIndex < combos.comboCounts.length; ++countIndex) {
-				if (combos.comboCounts[countIndex] == -2) {
-					gameWinningIndex = countIndex;
-				}
-				else if (combos.comboCounts[countIndex] == 2) {
-					gameLosingIndex = countIndex;
-				}
-			}
-			if (gameWinningIndex != -1) {
-				findOpenComboPositionAtIndex(gameWinningIndex);
-				isTurn = false;
-				return;
-			}
-			else if (gameLosingIndex != -1) {
-				findOpenComboPositionAtIndex(gameLosingIndex);
-				isTurn = false;
-				return;
-			}
-			// Choose a random spot.
-			else if (controller.markBox(MathUtils.random(TicTacToeGame.WIDTH - 1), MathUtils.random(TicTacToeGame.HEIGHT - 1), marker)) {
-				isTurn = false;
-			}
+		model.getBoard(board);
+		model.getCombinations(combos);
+		
+		if (firstTurn) {
+			firstTurn = false;
+			while (!makeOpeningMove()) {}
+			return;
 		}
+		
+		if (makeMostValuableMove()) {
+			return;
+		}
+		
+		makeMove(selectRandomLocation(emptyBoardLocations()));
 	}
 	
-	private void findOpenComboPositionAtIndex(int comboIndex) {
+	
+	private boolean makeMostValuableMove() {		
+		int combinationIndex = getMostValuableCombinationIndex();		
+		if (combinationIndex != -1) {
+			return makeMove(findOpenComboPositionAtIndex(combinationIndex));
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Finds an empty location in a combination.
+	 * @param comboIndex
+	 * @return null if the combination is full.
+	 */
+	private int[] findOpenComboPositionAtIndex(int comboIndex) {
 		for (int positionIndex = 0; positionIndex < combos.comboPositions[comboIndex].length; ++positionIndex) {
 			int posY = combos.comboPositions[comboIndex][positionIndex][0];
 			int posX = combos.comboPositions[comboIndex][positionIndex][1];
 			if (board[posY][posX] == 0) {
-				controller.markBox(posX, posY, marker);
+				return new int[] {posY, posX};
 			}
 		}
+		return null;
+	}
+	
+	
+	/**
+	 * Finds the index of a combination that will either allow the AI to win
+	 * or will block the player from winning.
+	 * @return -1 means no valuable combination was found.
+	 */
+	private int getMostValuableCombinationIndex() {
+		int gameLosingIndex = -1;
+		for (int countIndex = 0; countIndex < combos.comboCounts.length; ++countIndex) {
+			// If the AI has two boxes in the combination and the third box is empty,
+			// return the combination's index.
+			if (combos.comboCounts[countIndex] == -2) {
+				return countIndex;
+			}
+			// If the player has two boxes in the combination and the third box is empty,
+			// store the combination's index but keep checking combinations because a win
+			// is more valuable than a block.
+			else if (combos.comboCounts[countIndex] == 2) {
+				gameLosingIndex = countIndex;
+			}
+		}
+		return gameLosingIndex;
+	}
+	
+	
+	/**
+	 * Attempts to place marker at location.
+	 * @param location - in the format {y position, x position}
+	 * @return true if the move is accepted. false otherwise.
+	 */
+	private boolean makeMove(int[] location) {
+		return makeMove(location[1], location[0]);
+	}
+	
+	
+	/**
+	 * Attempts to place marker at position x,y.
+	 * @return true if the move is accepted. false otherwise.
+	 */
+	private boolean makeMove(int x, int y) {
+		return model.markBox(x, y, marker);
+	}
+	
+	
+	/**
+	 * Randomly selects one of the corners at the beginning of the game.
+	 */
+	private boolean makeOpeningMove() {
+		return makeMove(selectRandomLocation(new int[][] { 
+											{0, 0},
+											{0, Board.WIDTH - 1},
+											{Board.HEIGHT - 1, 0},
+											{Board.HEIGHT - 1, Board.WIDTH - 1} } ));
+	}
+	
+	
+	/**
+	 * Chooses a random location from the locations provided.
+	 */
+	private int[] selectRandomLocation(int[][] locations) {
+		return locations[MathUtils.random(locations.length - 1)];
+	}
+	
+	
+	private int[][] emptyBoardLocations() {
+		Array<int[]> openLocations = new Array<int[]>();
+		for (int y = 0; y < Board.HEIGHT; ++y) {
+			for (int x = 0; x < Board.WIDTH; ++x) {
+				if (board[y][x] == 0) {
+					openLocations.add(new int[] {y, x});
+				}
+			}
+		}
+		return openLocations.toArray(int[].class);
+	}
+	
+	
+	private boolean isBoardBlank() {
+		for (int[] row : board) {
+			for (int box : row) {
+				if (box != 0)
+					return false;
+			}
+		}
+		return true;
 	}
 }

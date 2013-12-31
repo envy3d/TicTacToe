@@ -10,26 +10,26 @@ import com.badlogic.gdx.InputProcessor;
 public class Player extends View implements InputProcessor {
 	private int boxWidth, boxHeight;
 	
-	public Player(int marker, Controller controller, int boxWidth, int boxHeight) {
-		super(marker, controller);
-		isTurn = false;
+	public Player(int marker, Model model, int boxWidth, int boxHeight) {
+		super(marker, model);
 		this.boxWidth = boxWidth;
 		this.boxHeight = boxHeight;
 	}
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if (isTurn) {
-			if (pointer == 0 && button == Buttons.LEFT) {
-				if (controller.markBox(screenX / boxWidth, screenY / boxHeight, marker)) {
-					isTurn = false;
-				}
-				return true;
-			}
+		if (pointer == 0 && button == Buttons.LEFT) {
+			model.markBox(screenX / boxWidth, screenY / boxHeight, marker);
+			return true;
 		}
 		return false;
 	}
 
+	
+	
+	
+	// Unused input events.
+	
 	@Override
 	public boolean keyDown(int keycode) {
 		return false;

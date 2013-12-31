@@ -20,9 +20,11 @@ public class Combinations {
 												{{0,0},{1,1},{2,2}},
 												{{0,2},{1,1},{2,0}}	};
 	
+	
 	public Combinations() {
 		comboCounts = new int[comboPositions.length];
 	}
+	
 	
 	public void updateCombinationCounts(int positionX, int positionY, int valueToAdd) {
 		
@@ -37,6 +39,7 @@ public class Combinations {
 			}
 		}
 	}
+	
 	
 	public void copyInto(Combinations combosToCopyTo) {
 		System.arraycopy(comboCounts, 0, combosToCopyTo.comboCounts, 0, comboCounts.length);

@@ -4,26 +4,28 @@
 
 package com.envy3d.tictactoe;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.InputProcessor;
 
 public class Player extends View implements InputProcessor {
 	private int boxWidth, boxHeight;
 	
-	public Player(int marker, Model model, int boxWidth, int boxHeight) {
+	public Player(int marker, Model model) {
 		super(marker, model);
-		this.boxWidth = boxWidth;
-		this.boxHeight = boxHeight;
 	}
 	
 	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if (pointer == 0 && button == Buttons.LEFT) {
-			model.markBox(screenX / boxWidth, screenY / boxHeight, marker);
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if (button == Buttons.LEFT) {
+			screenX -= 22;
+			screenY -= 71;
+			model.markBox(screenX / 110, screenY/ 100, marker);
 			return true;
 		}
 		return false;
 	}
+	
 
 	
 	
@@ -46,7 +48,7 @@ public class Player extends View implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		return false;
 	}
 

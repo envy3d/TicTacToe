@@ -9,40 +9,44 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MenuScreen implements Screen, InputProcessor {
 	
 	private SpriteBatch spriteBatch;
+	private AssetManager assets;
 	private OrthographicCamera camera;
 	private Game game;
 	
 	private Texture backgroundTex;
-	private Texture xWinTex;
-	private Texture oWinTex;
-	private Texture tieTex;
+	private Texture menuTex;
+	private Sprite ai1;
+	private Sprite ai2;
+	private Sprite aiMouseOver;
 	
 	private char winner;
 	
-	public MenuScreen(SpriteBatch spriteBatch, Game game) {
+	public MenuScreen(SpriteBatch spriteBatch, AssetManager assets, Game game) {
 		this.spriteBatch = spriteBatch;
+		this.assets = assets;
 		this.game = game;
 		
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.translate(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		camera.update();
-		backgroundTex = new Texture(Gdx.files.internal("menubg.png"));
-	}
-	
-	public MenuScreen(SpriteBatch spriteBatch, Game game, char winner) {
-		this(spriteBatch, game);
-		this.winner = winner;
-		xWinTex = new Texture(Gdx.files.internal("menuXWin.png"));
-		oWinTex = new Texture(Gdx.files.internal("menuOWin.png"));
-		tieTex = new Texture(Gdx.files.internal("menuTie.png"));
+		backgroundTex = assets.get("paperBg.png");
+		menuTex = assets.get("menu.png");
+		ai1 = new Sprite(assets.get("ai1.png", Texture.class));
+		ai1.setPosition(120, 95);
+		ai2 = new Sprite(assets.get("ai2.png", Texture.class));
+		ai2.setPosition(120, 15);
+		aiMouseOver = new Sprite(assets.get("aiHighlight.png", Texture.class));
+		aiMouseOver.setPosition(0, -200);
 	}
 
 	@Override
@@ -58,15 +62,10 @@ public class MenuScreen implements Screen, InputProcessor {
 		
 		spriteBatch.begin();
 		spriteBatch.draw(backgroundTex, 0, screenHeight - backgroundTex.getHeight());
-		if (winner == 'X') {
-			spriteBatch.draw(xWinTex, 0, screenHeight - xWinTex.getHeight());
-		}
-		else if (winner == 'O') {
-			spriteBatch.draw(oWinTex, 0, screenHeight - oWinTex.getHeight());
-		}
-		else if (winner == 'T') {
-			spriteBatch.draw(tieTex, 0, screenHeight - tieTex.getHeight());
-		}
+		spriteBatch.draw(menuTex, 0, screenHeight - menuTex.getHeight());
+		ai1.draw(spriteBatch);
+		ai2.draw(spriteBatch);
+		aiMouseOver.draw(spriteBatch);
 		spriteBatch.end();
 	}
 
@@ -97,10 +96,6 @@ public class MenuScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (keycode == Input.Keys.ENTER) {
-			game.setScreen(new GameScreen(spriteBatch, game));
-			return true;
-		}
 		return false;
 	}
 
@@ -116,6 +111,15 @@ public class MenuScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		screenY = (screenY * -1) + Gdx.graphics.getHeight();
+		if (screenX >= ai1.getX() && screenX <= ai1.getX() + ai1.getWidth() && screenY >= ai1.getY() && screenY <= ai1.getY() + ai1.getHeight()) {
+			game.setScreen(new GameScreen(spriteBatch, assets, game, 1));
+			return true;
+		}
+		else if (screenX >= ai2.getX() && screenX <= ai2.getX() + ai2.getWidth() && screenY >= ai2.getY() && screenY <= ai2.getY() + ai2.getHeight()) {
+			game.setScreen(new GameScreen(spriteBatch, assets, game, 2));
+			return true;
+		}
 		return false;
 	}
 
@@ -131,6 +135,16 @@ public class MenuScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		screenY = (screenY * -1) + Gdx.graphics.getHeight();
+		if (screenX >= ai1.getX() && screenX <= ai1.getX() + ai1.getWidth() && screenY >= ai1.getY() && screenY <= ai1.getY() + ai1.getHeight()) {
+			aiMouseOver.setPosition(ai1.getX(), ai1.getY());
+		}
+		else if (screenX >= ai2.getX() && screenX <= ai2.getX() + ai2.getWidth() && screenY >= ai2.getY() && screenY <= ai2.getY() + ai2.getHeight()) {
+			aiMouseOver.setPosition(ai2.getX(), ai2.getY());
+		}
+		else {
+			aiMouseOver.setPosition(0, -200);
+		}
 		return false;
 	}
 

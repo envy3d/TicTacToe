@@ -4,12 +4,10 @@
 
 package com.envy3d.tictactoe;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.InputProcessor;
 
 public class Player extends View implements InputProcessor {
-	private int boxWidth, boxHeight;
 	
 	public Player(int marker, Model model) {
 		super(marker, model);

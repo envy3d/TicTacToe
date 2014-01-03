@@ -4,8 +4,9 @@
 
 package com.envy3d.tictactoe;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 
 public class SimpleAI extends AI{
 	private boolean firstTurn;
@@ -124,7 +125,7 @@ public class SimpleAI extends AI{
 	
 	
 	private int[][] emptyBoardLocations() {
-		Array<int[]> openLocations = new Array<int[]>();
+		ArrayList<int[]> openLocations = new ArrayList<int[]>();
 		for (int y = 0; y < Board.HEIGHT; ++y) {
 			for (int x = 0; x < Board.WIDTH; ++x) {
 				if (board[y][x] == 0) {
@@ -132,17 +133,15 @@ public class SimpleAI extends AI{
 				}
 			}
 		}
-		return openLocations.toArray(int[].class);
-	}
-	
-	
-	private boolean isBoardBlank() {
-		for (int[] row : board) {
-			for (int box : row) {
-				if (box != 0)
-					return false;
-			}
+		openLocations.trimToSize();
+		// Manually copying array elements to get GWT to not crash.
+		int[][] openLocationsArray = new int[openLocations.size()][];
+		for (int i = 0, length = openLocations.size(); i < length; ++i) {
+			openLocationsArray[i] = new int[2];
+			openLocationsArray[i][0] = ((int[])openLocations.get(i))[0];
+			openLocationsArray[i][1] = ((int[])openLocations.get(i))[1];
 		}
-		return true;
+		return openLocationsArray;
 	}
+	
 }

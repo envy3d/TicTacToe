@@ -6,7 +6,6 @@ package com.envy3d.tictactoe;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -28,8 +27,6 @@ public class MenuScreen implements Screen, InputProcessor {
 	private Sprite ai1;
 	private Sprite ai2;
 	private Sprite aiMouseOver;
-	
-	private char winner;
 	
 	public MenuScreen(SpriteBatch spriteBatch, AssetManager assets, Game game) {
 		this.spriteBatch = spriteBatch;
